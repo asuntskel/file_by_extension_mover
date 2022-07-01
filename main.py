@@ -11,15 +11,15 @@ def setup() -> None:
 	if not os.path.isdir(TO_PATH):
 		os.mkdir(TO_PATH)
 
-def gather_files(path) -> list:
+def gather_files(path: str) -> list:
 	gathered_files = []
 	for path, d_names, f_names in os.walk(path):
 		for f in f_names:
 			gathered_files.append(os.path.join(path, f))
-			print(f)
+			# print(f)
 	return gathered_files
 
-def get_extension(file) -> str:
+def get_extension(file: str) -> str:
 	return pathlib.Path(file).suffix[1:]
 
 def create_file_extension_folders() -> None:
@@ -29,7 +29,7 @@ def create_file_extension_folders() -> None:
 		except FileExistsError:
 			print(f"{file_extension} folder already generated.")
 
-def copy_files_to_extension_folder(file, ext) -> None:
+def copy_files_to_extension_folder(file: str, ext: str) -> None:
 	shutil.copy(file, f"{TO_PATH}\\{ext}")
 
 def main() -> None:
