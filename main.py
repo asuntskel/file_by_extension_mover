@@ -7,39 +7,46 @@ FROM_PATH = ".\\"
 TO_PATH = ".\\results"
 WHITELIST = {"png", "jpg"}
 
-def setup() -> None:
-	if not os.path.isdir(TO_PATH):
-		os.mkdir(TO_PATH)
+def setup(result_path) -> None:
+	''' sets up the result folder if not existent '''
+	if not os.path.isdir(result_path):
+		os.mkdir(result_path)
 
-def gather_files(path: str) -> list:
-	gathered_files = []
+
+def gather_all_files(path: str) -> list:
+	''' returns a list of all nested files in path '''
+	files = []
 	for path, d_names, f_names in os.walk(path):
 		for f in f_names:
-			gathered_files.append(os.path.join(path, f))
-			# print(f)
-	return gathered_files
+			files.append(os.path.join(path, f))
+	return files
+
 
 def get_extension(file: str) -> str:
+	''' string formatting to get the extension type as str '''
 	return pathlib.Path(file).suffix[1:]
 
 def create_file_extension_folders() -> None:
-	for file_extension in WHITELIST:
+	''' creates a folder for each extension in the whitelist '''
+	for ext in WHITELIST:
 		try:
-			os.mkdir(f"{TO_PATH}\\{file_extension}")
+			os.mkdir(f"{TO_PATH}\\{ext}")
 		except FileExistsError:
-			print(f"{file_extension} folder already generated.")
+			print(f"{ext} folder already generated.")
 
-def copy_files_to_extension_folder(file: str, ext: str) -> None:
+
+def copy_file_to_ext_folder(file: str, ext: str) -> None:
+	''' copies file to extension specific folder '''
 	shutil.copy(file, f"{TO_PATH}\\{ext}")
 
-def main() -> None:
+def main(root) -> None:
 	create_file_extension_folders()
-	for file in gather_files(FROM_PATH):
+	for file in gather_all_files(root):
 		ext = get_extension(file)
 		if ext not in WHITELIST:
 			break
-		copy_files_to_extension_folder(file, ext)
+		copy_file_to_ext_folder(file, ext)
 
 if __name__ == "__main__":
-	setup()
-	main()
+	setup(TO_PATH)
+	main(FROM_PATH)
