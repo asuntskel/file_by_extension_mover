@@ -7,8 +7,6 @@ import timeit
 FROM_PATH = ".\\"
 TO_PATH = ".\\results"
 WHITELIST = {"png", "jpg"}
-EXCLUDED = {TO_PATH, "Windows"}
-
 
 def make_end_result_directory(path) -> None:
 	''' sets up the result folder if not existent '''
