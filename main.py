@@ -2,24 +2,24 @@
 import os
 import shutil
 import pathlib
+import timeit
 
 FROM_PATH = ".\\"
 TO_PATH = ".\\results"
 WHITELIST = {"png", "jpg"}
+EXCLUDED = {TO_PATH, "Windows"}
 
-def setup(result_path) -> None:
+
+def make_end_result_directory(path) -> None:
 	''' sets up the result folder if not existent '''
-	if not os.path.isdir(result_path):
-		os.mkdir(result_path)
+	if not os.path.isdir(path):
+		os.mkdir(path)
 
-
-def gather_all_files(path: str) -> list:
-	''' returns a list of all nested files in path '''
-	files = []
+def gather_all_files_generator(path: str) -> str:
 	for path, d_names, f_names in os.walk(path):
-		for f in f_names:
-			files.append(os.path.join(path, f))
-	return files
+		if TO_PATH not in path:
+			for f in f_names:
+				yield os.path.join(path, f)
 
 
 def get_extension(file: str) -> str:
@@ -32,21 +32,25 @@ def create_file_extension_folders() -> None:
 		try:
 			os.mkdir(f"{TO_PATH}\\{ext}")
 		except FileExistsError:
-			print(f"{ext} folder already generated.")
+			print(f"Warning : folder {ext} exists already.")
 
 
 def copy_file_to_ext_folder(file: str, ext: str) -> None:
 	''' copies file to extension specific folder '''
-	shutil.copy(file, f"{TO_PATH}\\{ext}")
+	try:
+		shutil.copy(file, f"{TO_PATH}\\{ext}")
+	except shutil.SameFileError:
+		print(f"File {file} exists already.") # was causing an error previously because TO_PATH was being walked while files were copied over...
+
 
 def main(root) -> None:
 	create_file_extension_folders()
-	for file in gather_all_files(root):
-		ext = get_extension(file)
-		if ext not in WHITELIST:
-			break
-		copy_file_to_ext_folder(file, ext)
+	for file in gather_all_files_generator(root):
+		file_extension = get_extension(file)
+		if file_extension in WHITELIST:
+			copy_file_to_ext_folder(file, file_extension)
+
 
 if __name__ == "__main__":
-	setup(TO_PATH)
+	make_end_result_directory(TO_PATH)
 	main(FROM_PATH)
