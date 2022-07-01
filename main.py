@@ -7,7 +7,7 @@ FROM_PATH = ".\\"
 TO_PATH = ".\\results"
 WHITELIST = {"png", "jpg"}
 
-def setup():
+def setup() -> None:
 	if not os.path.isdir(TO_PATH):
 		os.mkdir(TO_PATH)
 
@@ -22,17 +22,17 @@ def gather_files(path) -> list:
 def get_extension(file) -> str:
 	return pathlib.Path(file).suffix[1:]
 
-def create_file_extension_folders():
+def create_file_extension_folders() -> None:
 	for file_extension in WHITELIST:
 		try:
 			os.mkdir(f"{TO_PATH}\\{file_extension}")
 		except FileExistsError:
 			print(f"{file_extension} folder already generated.")
 
-def copy_files_to_extension_folder(file, ext):
+def copy_files_to_extension_folder(file, ext) -> None:
 	shutil.copy(file, f"{TO_PATH}\\{ext}")
 
-def main():
+def main() -> None:
 	create_file_extension_folders()
 	for file in gather_files(FROM_PATH):
 		ext = get_extension(file)
